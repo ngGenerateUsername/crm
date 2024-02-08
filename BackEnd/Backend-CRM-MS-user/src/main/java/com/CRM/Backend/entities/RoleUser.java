@@ -1,6 +1,0 @@
-package com.CRM.Backend.entities;
-
-public enum RoleUser {
-    ROLE_ADMIN,ROLE_PROPRIETAIRE,ROLE_COMMERCIAL,ROLE_RESPONSABLETICKET,ROLE_CONTACT
-}
-
