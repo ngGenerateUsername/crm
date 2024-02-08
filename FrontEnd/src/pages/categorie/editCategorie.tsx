@@ -26,6 +26,7 @@ import {
     TableCaption,
     TableContainer,
     useColorModeValue,
+    useToast,
   } from "@chakra-ui/react";
   
   // Custom components
@@ -42,10 +43,11 @@ import {
   
   
   type Overview1Props = {
-    categoryData?: any;
+    categoryData?: any,
+    eventClick:any
   };
   
-  export default function Overview1({ categoryData }: Overview1Props) {
+  export default function Overview1({ categoryData,eventClick }: Overview1Props) {
    
  
   
@@ -54,6 +56,7 @@ import {
   
     const [nom, setnom] = useState(categoryData.nom);
     const [tva, settva] = useState(categoryData.tva);
+    const toast = useToast();
 
     const isErrornom = nom === "";
     const isErrortva = tva === "";
@@ -85,19 +88,59 @@ import {
         );
     
         console.log("API Response:", response);
+        return response.payload;
       } catch (error) {
         console.log("Error:", error);
       }
     };
     async function testcategorie() {
       if (isErrornom === true) {
-        alert("nom invalid");
+        toast({
+          title: "Nom invalid!",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
       }else if (isErrortva === true || !/^[0-9]+$/.test(tva)) {
-        alert("TVA invalide ou contient des lettres");
+        toast({
+          title: "TVA invalide ou contient des lettres!",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
       } else {
-        await CategorieFetch(); 
-        alert("Catégorie modifiée avec succès!"); 
-        window.location.reload();
+       
+       try {
+        const catOuput= await CategorieFetch(); 
+        toast({
+          title: "Catégorie edité avec succès!",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
+        // window.location.reload();
+        const stateChild={
+          idCategorie:catOuput.idCategorie,
+          nom:catOuput.nom,
+          tva:catOuput.tva
+        };
+        console.log(`stateCHild li fel child: ${JSON.stringify(stateChild)}`)
+        eventClick(stateChild);
+
+       } catch (error) {
+        toast({
+          title: "problème lors de l'edit categorie",
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+          description:error.toString()
+        })
+       }
+
       }
     }
 

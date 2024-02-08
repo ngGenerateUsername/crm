@@ -134,12 +134,7 @@ import {
   AllMsgsExport,
   DetailsMsgExport,
   SetStatusMsgExport
-} from './user/Msg_Slice'
-import {  AllCategoriesExport, AllProductExport, ProductsByCategoryExport } from "./Offre/ProductSlices";
-import { AllOffreExport, OffreDetailsExport, UpdateOffreExport } from "./Offre/OffreSlices";
-import { AllFactureByComExport, FactureDetailsExport } from "./Facture/FactureSlices";
-import { AddDevisExport, AllDevisByComsExport, DetailDevisExport } from "./devis/devis_Slice";
-
+} from './user/Msg_Slice';
 
 import {
   AllCategorieExport,
@@ -292,26 +287,7 @@ const rootReducer = combineReducers({
     AddMsgExport:AddMsgExport.reducer,
     AllMsgsExport:AllMsgsExport.reducer,
     DetailsMsgExport:DetailsMsgExport.reducer,
-    SetStatusMsgExport:SetStatusMsgExport.reducer  ,  
-
- /************************ Offre_Slice  **************************/
-    AllOffreExport:AllOffreExport.reducer,
-    AllProductExport:AllProductExport.reducer,
-    OffreDetailsExport:OffreDetailsExport.reducer,
-    UpdateOffreExport:UpdateOffreExport.reducer,
-    ProductsByCategoryExport:ProductsByCategoryExport.reducer,
-    AllCategoriesExport:AllCategoriesExport.reducer,
-
- /************************ facture_Slice  **************************/
-    AllFactureByComExport:AllFactureByComExport.reducer,
-    FactureDetailsExport:FactureDetailsExport.reducer,
- /************************ Devis_Slice  **************************/
-
- AllDevisByComsExport:AllDevisByComsExport.reducer,
- AddDevisExport:AddDevisExport.reducer,
- DetailDevisExport:DetailDevisExport.reducer,
-    
- 
+    SetStatusMsgExport:SetStatusMsgExport.reducer,    
 
         /************************ Categorie_Slice  **************************/
         AllCategorieExport: AllCategorieExport.reducer,

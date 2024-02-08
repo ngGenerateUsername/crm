@@ -26,6 +26,7 @@ import {
     TableCaption,
     TableContainer,
     useColorModeValue,
+    useToast,
   } from "@chakra-ui/react";
   
   // Custom components
@@ -43,7 +44,9 @@ import {
   import { entreprisePerContact } from "state/user/Role_Slice";
   import { AddContact } from "state/user/SignUp_Slice";
   let nextId = 0;
-  export default function Overview() {
+
+
+  export default function Overview({eventClick}:any) {
     const textColor = useColorModeValue("gray.700", "white");
 
   
@@ -55,12 +58,12 @@ import {
     let history = useHistory();
     const dispatch = useDispatch();
   
-   
+   const toast = useToast();
   
     const CategorieFetch = async () => {
       try {
         console.log("test 1");
-        await dispatch(
+       const response = await dispatch(
             AddCategorie({
            nom,
            tva
@@ -68,6 +71,7 @@ import {
         )
         
           .catch((error: Error) => console.log(error));
+          return response.payload;
       } catch (error) {
         // console.log("test 2")
         console.log(error);
@@ -75,14 +79,56 @@ import {
     };
   
     async function testcategorie() {
+      if (isErrornom === true) {
+        toast({
+          title: "Nom invalid!",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
+      } else
       if (isErrortva === true || !/^[0-9]+$/.test(tva)) {
-        alert("TVA invalide ou contient des lettres");
-      } else if (isErrornom === true) {
-        alert("nom invalid");
-      } else {
-        await CategorieFetch(); 
-        alert("Catégorie ajoutée avec succès!"); 
-        window.location.reload();
+        
+        toast({
+          title: "TVA invalide ou contient des lettres!",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
+      }
+      
+       else {
+
+        try{
+          const catResponse= await CategorieFetch(); 
+          toast({
+            title: "Catégorie ajouté avec succès!",
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+            position: 'top',
+          })
+          // window.location.reload();
+          const stateChild={
+            idCategorie:catResponse.idCategorie,
+            nom:catResponse.nom,
+            tva:catResponse.tva
+          };
+          eventClick(stateChild);
+        }catch(error)
+        {
+          toast({
+            title: "problème lors de l'ajout d'une catégorie",
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top',
+            description:error.toString()
+          })
+        }
+          
       }
     }
     

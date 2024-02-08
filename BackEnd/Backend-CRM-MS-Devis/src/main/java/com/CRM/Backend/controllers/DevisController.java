@@ -45,7 +45,7 @@ public class DevisController {
 
 
     //delete facture by id
-    @DeleteMapping("delete/{idDevis}")
+    @DeleteMapping("delete/{idFacture}")
     private ResponseEntity<String> deleteDevis(@PathVariable Long idDevis)
     {
         return _devisService.deleteDevis(idDevis)?new ResponseEntity<String>("Facture deleted successfully",HttpStatus.OK):

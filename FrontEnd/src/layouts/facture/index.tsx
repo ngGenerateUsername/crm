@@ -1,4 +1,6 @@
+// Chakra imports
 import { Portal, Box, useDisclosure } from '@chakra-ui/react';
+// Layout components
 import Navbar from 'components/navbar/NavbarAdmin';
 import Sidebar from 'components/sidebar/Sidebar';
 import { SidebarContext } from 'contexts/SidebarContext';
@@ -45,7 +47,7 @@ export default function Dashboard(props: { [x: string]: any }) {
 	};
 	const getRoutes = (routes: RoutesType[]): any => {
 		return routes.map((route: RoutesType, key: any) => {
-			if (route.layout === '/facture') {
+			if (route.layout === '/contact') {
 				return <Route path={route.layout + route.path} component={route.component} key={key} />;
 			} else {
 				return null;

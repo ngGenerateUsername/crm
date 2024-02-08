@@ -618,28 +618,3 @@ export const Fingerprint = createIcon({
 		</g>
 	)
 });
-
-
-
-export const InvoiceIcon = createIcon({
-	displayName: 'InvoiceIcon',
-	viewBox: '0 0 24 24',
-	path: (
-	  <g fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path
-		  d="M2 4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2H2V4z"
-		  fill="currentColor"
-		/>
-		<path
-		  d="M22 8v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8h20zm-4 2h2v2h-2V10zm-2 2h-2v-2h2v2zm0 4h-2v-2h2v2z"
-		  fill="currentColor"
-		/>
-	  </g>
-	),
-  });
-  
-  
-  
-  
-  
-  

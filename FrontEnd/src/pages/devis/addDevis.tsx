@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  Select,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -17,399 +18,169 @@ import {
   TabPanels,
   Tabs,
   Text,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
   useColorModeValue,
-  useToast,
-  VStack,
-  extendTheme,
-  ChakraProvider,
-  Tfoot,
-  HStack,
-  NumberInputStepper,
-  NumberInput,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  NumberInputField,
-  Checkbox,
 } from "@chakra-ui/react";
 
-import { Select } from '@chakra-ui/react';
 // Custom components
 
 // Assets
 import { BsCircleFill } from "react-icons/bs";
-import { GrFormAdd } from "react-icons/gr";
-import { MdPersonRemoveAlt1 } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { Console } from "console";
+import { useDispatch, useSelector } from "react-redux";
+import { AddTicket, AllTickets } from "state/user/ticket_Slice";
+import {
+  ListClientsPerContact,
+  ListEntreprisePerClient,
+} from "state/user/RelationClientUser_Slice";
+import {
+  RespTicketPerEntreprise,
+  contactsPerEntreprise,
+} from "state/user/Role_Slice";
 
-import { useDispatch } from "react-redux";
-import { AddClient, fetchClients } from "state/user/Client_Slice";
-import { AddRelationClientUser, CLientsOfMyEntreprise, MyCLientsUser } from "state/user/RelationClientUser_Slice";
-import { entreprisePerContact } from "state/user/Role_Slice";
-import { AddContact } from "state/user/SignUp_Slice";
-import { CUIAutoComplete } from 'chakra-ui-autocomplete'
-import { AllProduct } from "state/Offre/ProductSlices";
-import { useSelector } from "react-redux";
-import { MultiSelect } from "primereact/multiselect";
-import { OverlayPanel } from "primereact/overlaypanel";
-import { AddOffre, AllOffre } from "state/Offre/OffreSlices";
-import { set } from "lodash";
-import { DateDisplay } from "helpers/DateDisplay";
-import { CloseIcon, DeleteIcon, PlusSquareIcon } from "@chakra-ui/icons";
-import { Dropdown } from "primereact/dropdown";
-import { AddFacture } from "state/Facture/FactureSlices";
-import { AddDevis } from "state/devis/devis_Slice";
-
-
-
-let nextId = 0;
-
-
-
-export default function OverviewDevis(props: { onClose: any, listFacture: any, setListFacture: any }) {
-
-  const [selectedOffre, setSelectedOffre] = useState(null);
-  const [totalRemise, setTotalRemise] = useState(0)
-  const [totalHT, setTotalHT] = useState(0)
-  const [totalTVA, setTotalTVA] = useState(0)
-  const [totalTTC, setTotalTTC] = useState(0)
-
+export default function Overview() {
   const textColor = useColorModeValue("gray.700", "white");
   const bgPrevButton = useColorModeValue("gray.100", "gray.100");
-  const bgAdd = useColorModeValue("blue.100", "blue.100");
-
   const [activeBullets, setActiveBullets] = useState({
     about: true,
     account: false,
     address: false,
   });
-
-  const aboutTab = useRef(null);
-  const accountTab = useRef(null);
-  const addressTab = useRef(null);
-  const [mail, setMail] = useState("");
-  const [numTel, setnumTel] = useState("");
-  const [nomEntreprise, setnomEntreprise] = useState("");
-  const [numFiscal, setnumFiscal] = useState("");
-  const [description, setdescription] = useState("");
-  const [ca, setca] = useState("");
-  const [domaine, setdomaine] = useState("");
-  const [dateCreation, setdateCreation] = useState("");
-  const [adresse, setAdresse] = useState("");
-  const isErrormail = mail === "";
-  const isErrornumTel = numTel === "";
-  const isErrornomEntreprise = nomEntreprise === "";
-  const isErrordomaine = domaine === "";
-  const isErroradresse = adresse === "";
   let history = useHistory();
   const dispatch = useDispatch();
-  const toast = useToast();
+  const addressTab = useRef(null);
+  const accountTab = useRef(null);
 
-  //******************************************************* */
+  const [SelectClient, setSelectClient] = useState(null);
+  const [SelectEntreprise, setSelectEntreprise] = useState(null);
+  const [SelectRespTicket, setSelectRespTicket] = useState(null);
+  const [titre, setTitre] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [typeTicket, setTypeTicket] = useState(null);
+  const [prioriteTicket, setPrioriteTicket] = useState(null);
 
-
-
-
-
-  //******************************************************* */
-
-
-
-  const [listOffre, setListOffre] = useState([]);
-  const [MailAddContact, setMailAddContact] = useState("");
-
-  const [title, setTitle] = useState("")
-  const [valid, setValid] = useState(true);
-  const addFacture = async () => {
-
-    if (!title) {
-      setValid(false);
-      toast({
-        title: "Ajouter le titre du devis",
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom-left',
+  useEffect(() => {
+    dispatch(AllTickets() as any)
+      .unwrap()
+      .then((res: any) => {
+        console.log(res);
       })
-      return;
-    }
-    if (!selectedClient) {
-      setValid(false);
-      toast({
-        title: "Selectionner le client",
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom-left',
+      .catch((error: Error) => console.log(error));
+  }, [dispatch]);
+
+  const { status, record } = useSelector(
+    (state: any) => state.AllTicketsExport
+  );
+
+  useEffect(() => {
+    dispatch(ListClientsPerContact(localStorage.getItem("user")) as any)
+      .unwrap()
+      .then((res: any) => {
+        console.log(res);
       })
-      return;
-    }
-    if (listOffre.length === 0) {
-      toast({
-        title: "Selectionner les offre",
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom-left',
-      })
-      return
-    }
+      .catch((error: Error) => console.log(error));
+  }, [dispatch]);
 
-    const listToAdd = listOffre.map((o: any) => {
+  const {
+    status: statusListClientsPerContact,
+    record: recordListClientsPerContact,
+  } = useSelector((state: any) => state.ListClientsPerContactExport);
 
-      return {
-        idOffre: o.idOffre,
-        prixHT: o.totaleHT.toFixed(3),
-        prixHTTC: o.totaleHTTC.toFixed(3),
-      }
-    })
-    const newFacture = {
-      title: title,
-      idCommercial: localStorage.getItem("user"),
-      idClient: selectedClient.idClient,
-      lignes: listToAdd
-
+  const ListClientsPerContactSelect = () => {
+    if (statusListClientsPerContact === "loading") return <></>;
+    if (statusListClientsPerContact === "failed") return <></>;
+    if (statusListClientsPerContact === "succeeded") {
+      return record.map((e: any) => {
+        return (
+          <Select
+            name="SelectClient"
+            id="owner"
+            value={SelectClient}
+            onChange={(e) => {
+              ListeEntreprisesF(e.target.value);
+            }}>
+            <option value="0">.........</option>
+            {recordListClientsPerContact.map((e: any, key: any) => (
+              <option></option>
+            ))}
+          </Select>
+        );
+      });
     }
+  };
+
+  const ListeEntreprisesF = async (id: String) => {
+    console.log(id);
+    dispatch(ListEntreprisePerClient(id) as any)
+      .unwrap()
+      .then((res: any) => {
+        console.log(res);
+      });
+  };
+  const {
+    status: statusListEntreprisePerClient,
+    record: recordListEntreprisePerClient,
+  } = useSelector((state: any) => state.ListEntreprisePerClientExport);
+
+  const ListeRespticketsF = async (id: String) => {
+    console.log(id);
+    dispatch(RespTicketPerEntreprise(id) as any)
+      .unwrap()
+      .then((res: any) => {
+        console.log(res);
+      });
+  };
+  const {
+    status: statuscontactsPerEntreprise,
+    record: recordcontactsPerEntreprise,
+  } = useSelector((state: any) => state.RespTicketPerEntrepriseExport);
+
+  console.log("liste ticket", record, status);
+  console.log(
+    "liste clients",
+    recordListClientsPerContact,
+    statusListClientsPerContact
+  );
+  console.log(
+    "liste entreprise",
+    recordListEntreprisePerClient,
+    statusListEntreprisePerClient
+  );
+  console.log(
+    "liste respticket",
+    recordcontactsPerEntreprise,
+    statuscontactsPerEntreprise
+  );
+
+  const AddTicketF = async () => {
     try {
-      const addedFacture = await dispatch(AddDevis(newFacture) as any)
-      console.log("new facture ", addedFacture)
-      toast({
-        title: "Devis ajouté avec succée",
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      })
-      props.setListFacture([...props.listFacture, addedFacture.payload])
-      setTitle("")
-      setSelectedClient("")
-      setListOffre([])
-      props.onClose();
-    } catch (err) {
-      toast({
-        title: "Erreur",
-        description: `server error ${err}`,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'top',
-      })
-      console.log(error.message);
+      console.log(SelectClient, SelectEntreprise, SelectRespTicket);
+      await dispatch(
+        AddTicket({
+          titre: titre,
+          description: description,
+          typeTicket: typeTicket,
+          prioriteTicket: prioriteTicket,
+          idCreateur: localStorage.getItem("user"),
+          idEntreprise: SelectEntreprise,
+          idClient: SelectClient,
+          idResponsable: SelectRespTicket,
+        }) as any
+      )
+        .then((res: any) => {
+          alert("creation ticket avec succes");
+          window.location.reload();
+        })
+        .catch((error: Error) => console.log(error));
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
 
-  const [selectedClient, setSelectedClient] = useState(null)
-  const [clients, setClients] = useState(null)
-  useEffect(() => {
-    dispatch(fetchClients() as any);
-  }, [dispatch]);
-  const { status: clientStatus, record: clientRecord } = useSelector((state: any) => state.fetchClientsExport);
-
-  useEffect(() => {
-    dispatch(AllOffre() as any);
-  }, [dispatch]);
-
-  const { status, record, error } = useSelector((state: any) => state.AllOffreExport);
-  const [Alloffre, setAllOffre] = useState([])
-
-  useEffect(() => {
-    setAllOffre(record)
-    console.log("call api", Alloffre)
-  }, [record])
-  useEffect(() => {
-    setClients(clientRecord)
-
-  }, [clientRecord])
-
-
-
-const [devisOffre,setDevisOffre]=useState("")
-  const ajouterOffre = () => {
-    
-
-    if(listOffre.length === 0){
-      if(selectedOffre.length > 1){
-        let returning = false;
-        selectedOffre.forEach((element:any) => {
-     
-          if(element.ligneOffres[0].produit.typeDevis !== selectedOffre[0].ligneOffres[0].produit.typeDevis ){
-            toast({
-              title: "ajouter offre de meme devise ",
-              status: 'error',
-              duration: 3000,
-              isClosable: true,
-              position: 'bottom-left',
-            })
-            returning = true;
-            return;
-          }
-        
-        });
-    if(returning){
-      return
-    }
-      }else{
-        setDevisOffre(selectedOffre[0].ligneOffres[0].produit.typeDevis) 
-      }
-    }else{
-      if(selectedOffre.length > 1){
-        let returni = false;
-        selectedOffre.forEach((element:any) => {
-        
-          if(element.ligneOffres[0].produit.typeDevis !== devisOffre ){
-            toast({
-              title: "ajouter offre de meme devise ",
-              status: 'error',
-              duration: 3000,
-              isClosable: true,
-              position: 'bottom-left',
-            })
-            returni = true;
-            return;
-          }
-        
-        });
-        if(returni){
-          return
-        }
-      }else{
-        setDevisOffre(selectedOffre[0].ligneOffres[0].produit.typeDevis) 
-    
-        console.log("i am hereeeeeeeeeee tooooo",selectedOffre[0].ligneOffres[0].produit.typeDevis)
-        if(devisOffre !== selectedOffre[0].ligneOffres[0].produit.typeDevis) {
-          toast({
-            title: "ajouter offre de meme devise ",
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-            position: 'bottom-left',
-          })
-          return
-        }
-      }
-    }
-    //*********** */
-    if (!selectedOffre) {
-      toast({
-        title: "Selectionner les offre",
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-        position: 'bottom-left',
-      })
-      return
-    }
-
-
-
-    setListOffre([...listOffre, ...selectedOffre])
-    if (Alloffre) {
-      const newToSelect = Alloffre.filter((sp: any) =>
-        !selectedOffre.some((s: any) => s.idOffre === sp.idOffre)
-      );
-
-      setAllOffre(newToSelect);
-      setSelectedOffre(null)
-    }
-
-
-  }
-
-  const calculateTotalHT = () => {
-    let tot = listOffre.reduce(function (total, curr) {
-      return total + curr.totaleHT;
-    }, 0)
-
-    return (tot)
-  }
-
-  // const calculateTotalRemise = () => {
-  //   let tot = listProduit.reduce(function (total, curr) {
-  //     return total + (curr.prix * curr.qte) - curr.prixHT;
-  //   }, 0)
-
-  //   return (tot)
-  // }
-
-  const calculateTotalTVA = () => {
-    let tot = listOffre.reduce(function (total, curr) {
-
-
-      return total + curr.tvaMontant;
-    }, 0)
-
-    return (tot)
-  }
-  const calculateTotal = () => {
-    let tot = listOffre.reduce(function (total, curr) {
-
-
-      return total + curr.totaleHTTC;
-    }, 0)
-
-    return (tot)
-  }
-
-
-  useEffect(() => {
-    setTotalHT(calculateTotalHT())
-    // setTotalRemise(calculateTotalRemise())
-    setTotalTVA(calculateTotalTVA())
-    setTotalTTC(calculateTotal())
-  }, [listOffre])
-  // const handleCellChange = (rowIndex: any, columnName: any, newValue: any) => {
-  //   // Update the state with the new value
-  //   const updatedData = [...listProduit];
-  //   updatedData[rowIndex][columnName] = parseFloat(newValue);
-
-  //   updatedData[rowIndex]["prixHT"] = parseFloat(newValue) * updatedData[rowIndex]["prix"];
-
-  //   const prix = updatedData[rowIndex]["qte"] * updatedData[rowIndex]["prix"]
-
-  //   updatedData[rowIndex]["prixHT"] = prix - (prix * updatedData[rowIndex]["remise"] / 100);
-  //   updatedData[rowIndex]["prixTTC"] = updatedData[rowIndex]["prixHT"] + updatedData[rowIndex]["prixHT"] * updatedData[rowIndex]["tva"] / 100;
-
-
-  //   setListProduit(updatedData);
-
-
-  // };
-
-  const removeOffre = (id: any) => {
-    const newList = listOffre.filter((lo: any) => lo.idOffre !== id)
-    setListOffre(newList);
-    const offre = record.find((sp: any) =>
-      sp.idOffre === id
-    );
-    setAllOffre([...Alloffre, offre]);
-
-  }
-
-
-// timbre fiscale function *******************
-const [timbre,setTimbre]=useState(false);
-const timbreFiscale=()=>{
-  if(timbre){
-    setTimbre(false);
-    setTotalTTC(totalTTC-1)
-  }else{
-    setTimbre(true)
-    setTotalTTC(totalTTC+1)
-  }
-
-}
   return (
     <Box>
-
-
       <Grid
         templateColumns={{
           base: "1fr",
@@ -426,23 +197,122 @@ const timbreFiscale=()=>{
           pe="20px"
           direction="column"
           align="center">
-
+          <Flex
+            direction="column"
+            textAlign="center"
+            mb={{ sm: "25px", md: "45px" }}>
+            <Text
+              color={textColor}
+              fontSize={{ sm: "2xl", md: "3xl", lg: "4xl" }}
+              fontWeight="bold"
+              mb="8px">
+              Ajoutez un Devis
+            </Text>
+          </Flex>
           <Tabs
             variant="unstyled"
             mt="24px"
             display="flex"
             flexDirection="column">
             <TabList display="flex" alignSelf="center" justifySelf="center">
-
-
-
+              <Tab
+                ref={accountTab}
+                w={{ sm: "120px", md: "250px", lg: "300px" }}
+                onClick={() =>
+                  setActiveBullets({
+                    about: true,
+                    account: true,
+                    address: false,
+                  })
+                }>
+                <Flex
+                  direction="column"
+                  justify="center"
+                  align="center"
+                  position="relative"
+                  _before={{
+                    content: "''",
+                    width: { sm: "120px", md: "250px", lg: "300px" },
+                    height: "3px",
+                    bg: activeBullets.address ? textColor : "gray.200",
+                    left: { sm: "12px", md: "28px" },
+                    top: {
+                      sm: activeBullets.account ? "6px" : "4px",
+                      md: null,
+                    },
+                    position: "absolute",
+                    bottom: activeBullets.account ? "40px" : "38px",
+                    zIndex: -1,
+                    transition: "all .3s ease",
+                  }}>
+                  <Icon
+                    as={BsCircleFill}
+                    color={activeBullets.account ? textColor : "gray.300"}
+                    w={activeBullets.account ? "16px" : "12px"}
+                    h={activeBullets.account ? "16px" : "12px"}
+                    mb="8px"
+                  />
+                  <Text
+                    color={activeBullets.account ? { textColor } : "gray.300"}
+                    fontWeight={activeBullets.account ? "bold" : "normal"}
+                    fontSize="sm"
+                    display={{ sm: "none", md: "block" }}>
+                    Details
+                  </Text>
+                </Flex>
+              </Tab>
+              <Tab
+                ref={addressTab}
+                w={{ sm: "120px", md: "250px", lg: "300px" }}
+                onClick={() =>
+                  setActiveBullets({
+                    about: true,
+                    account: true,
+                    address: true,
+                  })
+                }>
+                <Flex
+                  direction="column"
+                  justify="center"
+                  align="center"
+                  position="relative"
+                  _before={{
+                    content: "''",
+                    width: { sm: "120px", md: "250px", lg: "300px" },
+                    height: "3px",
+                    left: { sm: "12px", md: "32px" },
+                    top: {
+                      sm: activeBullets.address ? "6px" : "4px",
+                      md: null,
+                    },
+                    position: "absolute",
+                    bottom: activeBullets.address ? "40px" : "38px",
+                    zIndex: -1,
+                    transition: "all .3s ease",
+                  }}>
+                  <Icon
+                    as={BsCircleFill}
+                    color={activeBullets.address ? textColor : "gray.300"}
+                    w={activeBullets.address ? "16px" : "12px"}
+                    h={activeBullets.address ? "16px" : "12px"}
+                    mb="8px"
+                  />
+                  <Text
+                    color={activeBullets.address ? { textColor } : "gray.300"}
+                    fontWeight={activeBullets.address ? "bold" : "normal"}
+                    transition="all .3s ease"
+                    fontSize="sm"
+                    _hover={{ color: textColor }}
+                    display={{ sm: "none", md: "block" }}>
+                    Etape final
+                  </Text>
+                </Flex>
+              </Tab>
             </TabList>
             <TabPanels mt="24px" maxW={{ md: "90%", lg: "100%" }} mx="auto">
-
-
               <TabPanel w={{ sm: "330px", md: "700px", lg: "850px" }} mx="auto">
                 <Box>
-                  <Flex mb="20px">
+                  <Flex mb="40px">
                     <Flex
                       direction="column"
                       align="center"
@@ -454,258 +324,226 @@ const timbreFiscale=()=>{
                         color={textColor}
                         fontSize="lg"
                         fontWeight="bold"
-                      >
-                        Ajouter un Devis
+                        mb="4px">
+                        Commençons par les détails de devis
                       </Text>
                     </Flex>
                   </Flex>
                   <Box>
                     <Flex direction="column" w="100%">
-                      <Stack direction="column" spacing="20px" >
-                        <FormControl px={8} >
+                      <Stack direction="column" spacing="20px">
+                        <FormControl>
                           <FormLabel
                             color={textColor}
                             fontWeight="bold"
-                            fontSize="m">
-                            Titre de Devis
+                            fontSize="xs">
+                            Titre de ticket
                           </FormLabel>
                           <Input
-                            isInvalid={valid ? false : true}
                             borderRadius="15px"
-                            placeholder="titre de devis"
-                            fontSize="m"
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="..."
+                            fontSize="xs"
+                            name="titre"
+                            value={titre}
+                            onChange={(e) => setTitre(e.target.value)}
                           />
                         </FormControl>
-                        <FormControl px={8}  >
+                        <FormControl>
                           <FormLabel
                             color={textColor}
                             fontWeight="bold"
-                            fontSize="m">
-                            Selectionner le client
+                            fontSize="xs">
+                            Description
                           </FormLabel>
-                          <Stack  >
-                            <Dropdown appendTo="self" value={selectedClient} onChange={(e) => setSelectedClient(e.value)} options={clients} optionLabel="nomEntreprise" placeholder="Selectionner le client"
-                              filter className="w-full md:w-14rem" />
-
-                          </Stack>
+                          <Input
+                            borderRadius="15px"
+                            placeholder="..."
+                            fontSize="xs"
+                            type="text"
+                            name="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                          />
                         </FormControl>
-                        <FormControl px={8}  >
+                        <FormControl>
                           <FormLabel
                             color={textColor}
                             fontWeight="bold"
-                            fontSize="m">
-                            Selectionner les Offre
+                            fontSize="xs">
+                            Type de Ticket
                           </FormLabel>
-                          <Stack  >
-                            <MultiSelect appendTo="self" value={selectedOffre} onChange={(e) => setSelectedOffre(e.value)} options={Alloffre} optionLabel="title"
-                              filter placeholder="Selectionner les Offre" maxSelectedLabels={3} className="w-full md:w-20rem " />
-
-                          </Stack>
+                          <Select
+                            name="typeTicket"
+                            value={typeTicket}
+                            onChange={(e) => setTypeTicket(e.target.value)}
+                            id="owner"
+                            defaultValue="CONTRAT">
+                            <option value="CONTRAT">CONTRAT</option>
+                            <option value="SERVICE">SERVICE</option>
+                            <option value="WEB">WEB</option>
+                            <option value="BUG">BUG</option>
+                            <option value="RECLAMATION">RECLAMATION</option>
+                            <option value="AUTRES">AUTRES</option>
+                          </Select>
                         </FormControl>
-
-
-                        <Button
-                            variant="no-hover"
-                            bg={bgAdd}
-                            alignSelf="flex-end"
-                            mt="24px"
-                            w={{ sm: "75px", lg: "170px" }}
-                            h="35px"
-                            onClick={() =>
-                              ajouterOffre()
-                            }>
-                               <Text
-                        color={textColor}
-                        fontSize="md"
-                        fontWeight="bold"
-                      >
-                        Ajouter l'offre :
-                      </Text>
-                            <Icon
-                              as={PlusSquareIcon}
-                              color={
-                                activeBullets.about ? textColor : "gray.300"
-                              }
-                              w={activeBullets.about ? "16px" : "12px"}
-                              h={activeBullets.about ? "16px" : "12px"}
-                      
-                            />
-                          </Button>
+                        <FormControl gridColumn={{ sm: "1 / 3", lg: "auto" }}>
+                          <FormLabel
+                            color={textColor}
+                            fontWeight="bold"
+                            fontSize="xs">
+                            Priorite de ticket
+                          </FormLabel>
+                          <Select
+                            name="prioriteTicket"
+                            value={prioriteTicket}
+                            onChange={(e) => setPrioriteTicket(e.target.value)}
+                            defaultValue="NORMAL">
+                            <option value="FAIBLE">FAIBLE</option>
+                            <option value="NORMAL">NORMAL</option>
+                            <option value="URGENT">URGENT</option>
+                          </Select>
+                        </FormControl>
                       </Stack>
-                      <br></br>
-                      <ChakraProvider>
 
-                        {listOffre.length > 0 && listOffre.map((offre) => (
-                          <div key={offre.idOffre}>
-                            <Flex
-                              direction="column"
-                              align="center"
-                              justify="center"
-                              textAlign="center"
-                              w="80%"
-                              mx="auto"
-                              mt={30}
-                            >
-                              <Text
-                                color={textColor}
-                                fontSize="3xl"
-                                fontWeight="bold"
-                              >
-                                {offre.title}
-                              </Text>
-                              <Text
-                                color={textColor}
-                                fontSize="sm"
-
-                              >
-                                <DateDisplay dateTimeString={offre.createdAt} />
-                              </Text>
-                            </Flex>
-                            <Flex align="end"
-                              justify="end">
-                              <Button
-                              >
-                                <Icon
-                                  as={DeleteIcon}
-                                  color={
-                                    activeBullets.about
-                                      ? "red.300"
-                                      : "red.300"
-                                  }
-                                  w={activeBullets.about ? "16px" : "12px"}
-                                  h={activeBullets.about ? "16px" : "12px"}
-
-                                  onClick={() => {
-                                    removeOffre(offre.idOffre)
-                                  }}
-                                />
-                              </Button>
-                            </Flex>
-
-                            <TableContainer>
-
-
-                              <Table size="sm" variant="simple" colorScheme="brand" >
-
-                                <Thead>
-                                  <Tr>
-                                    <Th ><center>Produit</center></Th>
-                                    <Th><center>Prix unitaire(TND)</center></Th>
-                                    <Th > <center>Quantité</center> </Th>
-                                    <Th><center>Remise %</center></Th>
-                                    <Th><center>Prix HT</center></Th>
-                                    <Th><center>Prix TTC</center></Th>
-                                  </Tr>
-                                </Thead>
-                                <Tbody>
-
-                                  {offre.ligneOffres.map((prod: any) => (
-                                    <Tr key={prod.id} >
-                                      <Td>{prod.produit.nom} (<small> <strong>TVA=</strong>{prod.produit.categorie.tva}%</small>)</Td>
-                                      <Td><center>{prod.produit.prixInitial.toFixed(3)}</center></Td>
-                                      <Td><center>{prod.qte}</center></Td>
-                                      <Td><center>{prod.remise}%</center></Td>
-
-                                      <Td><center>{prod.prixHT.toFixed(3)}</center></Td>
-                                      <Td><center>{prod.prixTTC.toFixed(3)}</center></Td>
-
-                                    </Tr>
-                                  ))}
-                                  <Tr  >
-                                    <Td></Td>
-                                    <Td></Td>
-                                    <Td></Td>
-                                    <Td><center><strong>TOTAL</strong></center></Td>
-
-                                    <Td><center><strong>{offre.totaleHT.toFixed(3)}</strong>  </center></Td>
-                                    <Td><center><strong>{offre.totaleHTTC.toFixed(3)}</strong> </center></Td>
-
-                                  </Tr>
-                                </Tbody>
-                              </Table>
-
-
-
-                            </TableContainer></div>
-                        ))}
-                      </ChakraProvider>
-                      <ChakraProvider>
-                        <Flex justify="flex-end">
-
-
-                          {/* <HStack > */}
-                          {/* <Table size="sm" colorScheme="brand" >
-                              <Thead>
-                                <Tr>
-                                  <Th isNumeric>TVA</Th>
-  
-                                  <Th isNumeric>Base</Th>
-                                  <Th isNumeric>Montant TVA</Th>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                                <Tr>
-                                  <Td isNumeric>25.7</Td>
-                                  <Td isNumeric>95.4</Td>
-                                  <Td isNumeric>85.4</Td>
-                                </Tr>
-                                <Tr>
-                                  <Td isNumeric>39.48</Td>
-                                  <Td isNumeric>80.48</Td>
-                                  <Td isNumeric>10.48</Td>
-                                </Tr>
-  
-                              </Tbody>
-  
-                            </Table> */}
-                          <Table style={{ width: '30%', marginTop: '30px' }} size="sm" colorScheme="brand" >
-
-                            <Tbody>
-
-                              <Tr>
-                                <Th isNumeric>Total HT</Th>
-
-                                <Td isNumeric>{totalHT.toFixed(3)}</Td>
-                              </Tr>
-                              <Tr>
-                                <Th isNumeric>TVA</Th>
-
-                                <Td isNumeric>{totalTVA.toFixed(3)}</Td>
-                              </Tr>
-                              <Tr>
-      <Td isNumeric> <Checkbox  size='md' colorScheme='green'  onChange={()=>{timbreFiscale()}}>
-    <Text fontWeight="bold" color="gray.800">Timbre fiscal</Text> 
-  </Checkbox> </Td>
-    
-      <Td isNumeric>{timbre?1000:0}</Td>
-    </Tr>
-                              <Tr>
-                                <Th isNumeric>Total TTC</Th>
-
-                                <Td isNumeric>{totalTTC.toFixed(3)}</Td>
-                              </Tr>
-                            </Tbody>
-
-                          </Table>
-                          {/* </HStack> */}
-                        </Flex>
-                      </ChakraProvider>
-                      <Flex justify="flex-end">
-
+                      <Button
+                        variant="no-hover"
+                        bg="linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)"
+                        alignSelf="flex-end"
+                        mt="24px"
+                        w={{ sm: "75px", lg: "100px" }}
+                        h="35px"
+                        onClick={() => addressTab.current.click()}>
+                        <Text fontSize="xs" color="#fff" fontWeight="bold">
+                          Suivant
+                        </Text>
+                      </Button>
+                    </Flex>
+                  </Box>
+                </Box>
+              </TabPanel>
+              <TabPanel w={{ sm: "330px", md: "700px", lg: "850px" }} mx="auto">
+                <Box>
+                  <Flex mb="40px">
+                    <Flex
+                      direction="column"
+                      align="center"
+                      justify="center"
+                      textAlign="center"
+                      w="80%"
+                      mx="auto">
+                      <Text
+                        color={textColor}
+                        fontSize="lg"
+                        fontWeight="bold"
+                        mb="4px">
+                        Etape final
+                      </Text>
+                    </Flex>
+                  </Flex>
+                  <Box>
+                    <Flex direction="column" w="100%">
+                      <Stack direction="column" spacing="20px">
+                        <FormControl>
+                          <FormLabel
+                            color={textColor}
+                            fontWeight="bold"
+                            fontSize="xs">
+                            Client
+                          </FormLabel>
+                          <Select
+                            name="SelectClient"
+                            id="owner"
+                            value={SelectClient}
+                            onChange={(e) => {
+                              setSelectClient(e.target.value);
+                              ListeEntreprisesF(e.target.value);
+                            }}>
+                            <option value="0">.........</option>
+                            {recordListClientsPerContact.map(
+                              (e: any, key: any) => (
+                                <option key={e.idClient} value={e.idClient}>
+                                  {e.nomEntreprise}
+                                </option>
+                              )
+                            )}
+                          </Select>
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel
+                            color={textColor}
+                            fontWeight="bold"
+                            fontSize="xs">
+                            Entreprise
+                          </FormLabel>
+                          <Select
+                            name="SelectClient"
+                            id="owner"
+                            value={SelectEntreprise}
+                            onChange={(e) => {
+                              setSelectEntreprise(e.target.value);
+                              ListeRespticketsF(e.target.value);
+                            }}>
+                            <option value="0">.........</option>
+                            {recordListEntreprisePerClient.map(
+                              (e: any, key: any) => (
+                                <option key={e.idUser} value={e.idUser}>
+                                  {e.nomEntreprise}
+                                </option>
+                              )
+                            )}
+                          </Select>
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel
+                            color={textColor}
+                            fontWeight="bold"
+                            fontSize="xs">
+                            Responsable ticket
+                          </FormLabel>
+                          <Select
+                            name="ss"
+                            id="ss"
+                            value={SelectRespTicket}
+                            onChange={(e) => {
+                              setSelectRespTicket(e.target.value);
+                            }}>
+                            <option value="0">.........</option>
+                            {recordcontactsPerEntreprise.map(
+                              (e: any, key: any) => (
+                                <option value={e.idUser} key={e.idUser}>
+                                  {e.nom} {e.prenom}
+                                </option>
+                              )
+                            )}
+                          </Select>
+                        </FormControl>
+                      </Stack>
+                      <Flex justify="space-between">
+                        <Button
+                          variant="no-hover"
+                          bg={bgPrevButton}
+                          alignSelf="flex-end"
+                          mt="24px"
+                          w={{ sm: "75px", lg: "100px" }}
+                          h="35px"
+                          onClick={() => accountTab.current.click()}>
+                          <Text
+                            fontSize="xs"
+                            color="gray.700"
+                            fontWeight="bold">
+                            Précédent
+                          </Text>
+                        </Button>
                         <Button
                           variant="no-hover"
                           bg="linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)"
                           alignSelf="flex-end"
                           mt="24px"
-                          w={{ sm: "200px", lg: "130px" }}
-                          h="40px"
-                          onClick={addFacture}
-                        >
+                          w={{ sm: "75px", lg: "100px" }}
+                          h="35px"
+                          onClick={AddTicketF}>
                           <Text fontSize="xs" color="#fff" fontWeight="bold">
-                            Creer Devis
+                            Ajouter
                           </Text>
                         </Button>
                       </Flex>
@@ -716,16 +554,7 @@ const timbreFiscale=()=>{
             </TabPanels>
           </Tabs>
         </Flex>
-
-
-
-
-
-
       </Grid>
-
-
-
     </Box>
   );
 }

@@ -72,6 +72,10 @@ import {
     const [editItemNom, setEditItemNom] = useState(null);
     const [editItemDescription, setEditItemDescription] = useState(null);
     const [editItemPrixInitial, setEditItemPrixInitial] = useState(null);
+    const [editItemDevise,setEditItemDevise] = useState(null);
+    const [editItemCategorieId,setEditItemCategorieId] = useState(null);
+    const [editItemCategorieName,setEditItemCategorieName] = useState(null);
+    const[devise,setDevise] = useState(null);
     const [editProduitData, setEditProduitData] = useState(null);
   
    
@@ -86,6 +90,39 @@ import {
     }, [dispatch]);
     const { status, record } = useSelector((state: any) => state.AllProduitExport);
     console.log(record, status);
+
+
+    //add new state
+    const [recordState,setRecordState]=useState(record);
+
+    useEffect(()=>{ setRecordState(record) },[record]);
+
+    //manage state child to parent
+     const refreshRecord = (dataFromChild:any)=>{
+      if(editItemId){
+        const recordUpdate = record.map((elemRecord:any)=>{
+          if(elemRecord.idProduit== dataFromChild.idProduit)
+          return {...dataFromChild,prixAvecTva:dataFromChild.prixInitial * (1 + dataFromChild.categorie.tva /100)};
+          else
+          return elemRecord;
+        })
+        setRecordState(recordUpdate);
+      }else 
+      {
+        console.log(`hello im here nom : `);
+        console.log(dataFromChild)
+        console.log(`stringify dataFrom child: ${dataFromChild}`)
+        console.log(`End hello instruction message !`);
+        dataFromChild.prixAvecTva = dataFromChild.prixInitial * (1 + dataFromChild.categorie.tva /100);
+        setRecordState([...recordState,dataFromChild]);
+      }
+
+      onClose();
+    }
+    //end state added
+
+
+
     const { status: statusCommerciaux, record: recordCommerciaux } = useSelector(
       (state: any) => state.CommerciauxPerEntrepriseExport
     );
@@ -161,7 +198,7 @@ import {
         );
   
       if (status === "succeeded") {
-        return record.map((e: any) => {
+        return recordState.map((e: any) => {
           return (
             <Tr>
               <Td>
@@ -252,7 +289,7 @@ import {
                   color={textColor}
                   fontSize="sm"
                   fontWeight="700">
-                  {e.prixAvecTva+ " Dt"}
+                  {Number(e.prixAvecTva).toFixed(3)+ " Dt"}
                 </Text>
               </Td>
           
@@ -289,6 +326,9 @@ import {
     setEditItemNom(e.nom); 
     setEditItemDescription(e.description); 
     setEditItemPrixInitial(e.prixInitial); 
+    setEditItemDevise(e.typeDevis);
+    setEditItemCategorieId(e.categorie.idCategorie);
+    setEditItemCategorieName(e.categorie.nom);
     onOpen();
   }}
   marginLeft="40%"
@@ -455,10 +495,18 @@ import {
             <DrawerHeader>{editItemId ? "Modifier  Produit" : "Ajouter Produit"}</DrawerHeader>
             <DrawerBody>
       {editItemId ? (
-        <Overview1 produitData={{ id: editItemId, reference: editItemReference, nom: editItemNom, description: editItemDescription, prixInitial: editItemPrixInitial }} />
+        <Overview1
+        produitData={{ id: editItemId, reference: editItemReference, nom: editItemNom,
+           description: editItemDescription, prixInitial: editItemPrixInitial,
+           typeDevis:editItemDevise,
+           categorieId:editItemCategorieId,
+           categorieName:editItemCategorieName
+          }} clickEvent={refreshRecord} />
        
       ) : (
-        <Overview /> 
+        <Overview 
+        
+         clickEvent={refreshRecord}/> 
       )}
     </DrawerBody>
             <DrawerFooter>

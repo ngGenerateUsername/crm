@@ -11,7 +11,6 @@ import CommercialLayout from './layouts/commercial';
 import RespTicketLayout from './layouts/respTicket';
 import RTLLayout from './layouts/rtl';
 import TicketLayout from './layouts/ticket'
-import OffreLayout from './layouts/offre'
 import OpportuniteLayout from './layouts/opportunite'
 import Ajout from 'layouts/ajout'
 import Contact from 'layouts/contact'
@@ -20,9 +19,7 @@ import theme from './theme/theme';
 import axios from 'axios';
 import store from 'state/store';
 import { Provider } from 'react-redux';
-import jwt_decode from 'jwt-decode'
-import FactureLayout from './layouts/facture'
-import DevisLayout from './layouts/devis'
+import jwt_decode from 'jwt-decode';
 import factureLayout from './layouts/facture';
 import ProduitLayout from './layouts/produit';
 
@@ -30,7 +27,7 @@ import ProduitLayout from './layouts/produit';
 let token_decrypt:any = null ;
 axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
 if(localStorage.getItem("token") != null){
-	token_decrypt = jwt_decode(localStorage.getItem("token"))
+	token_decrypt = jwt_decode(localStorage.getItem("token")) 
 }
 ReactDOM.render(
 	<Provider store={store}>
@@ -49,11 +46,8 @@ ReactDOM.render(
 					<Route path={`/profile`} component={ProfileLayout} />
 					<Route path={`/prop`} component={PropLayout} />
 					<Route path={`/ticket`} component={TicketLayout} />
-					<Route path={`/offre`} component={OffreLayout} />
-					<Route path={`/facture`} component={FactureLayout} />
-					<Route path={`/devis`} component={DevisLayout} />
 					<Route path={`/opportunite`} component={OpportuniteLayout} />
-		
+					<Route path={`/factures`} component={factureLayout}  />
 					<Route path={`/rtl`} component={RTLLayout} />
 					<Route path={`/produit`} component={ProduitLayout} />
 					<Redirect from='/' to='/auth' />

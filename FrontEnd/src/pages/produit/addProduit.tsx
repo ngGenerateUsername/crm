@@ -26,7 +26,8 @@ import {
     TableCaption,
     TableContainer,
     useColorModeValue,
-    Select
+    Select,
+    useToast
   } from "@chakra-ui/react";
   
   // Custom components
@@ -41,10 +42,12 @@ import {
   import { useDispatch } from "react-redux";
   import { AddProduit } from "state/produit/produit_Slice";
   import { FindCategorieById } from "state/categorie/categorie_Slice";
-  export default function Overview() {
+
+
+  export default function Overview({clickEvent}:any) {
     const textColor = useColorModeValue("gray.700", "white");
 
-  
+    
     const [nom, setnom] = useState("");
     const isErrornom = nom === "";
 
@@ -57,30 +60,48 @@ import {
     const [prixInitial, setprixInitial] = useState("");
     const isErrorprixInitial = prixInitial === "";
 
+    // console.log("this is produitData props shit: "+produitData.reference) //this is will be deleted sooner
 
-  const [categorie, setcategorie] = useState(''); 
-  const [isErrorcategorie, setIsErrorcategorie] = useState(false); // État pour la gestion des erreurs
+ 
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const isErrorcategorie = selectedCategoryId === '';
 
+  //ajout d'un champ devise
+  const devises=[
+    'TND',
+    'SAR',
+    'EUR',
+    'USD',
+    'CAD'
+  ];
+  //end ajouter
+  const [selectedDevise,setSelectedDevise] = useState("");
+  const isErrorDevise = selectedDevise === '';
+
+  //find devise
     let history = useHistory();
     const dispatch = useDispatch();
+    const toast = useToast();
    
   
     const ProduitFetch = async () => {
       try {
         console.log(selectedCategoryId);
-        await dispatch(
+       const s= await dispatch(
             AddProduit({
             reference,
             nom,
             description,
-            prixInitial,
+            prixInitial:parseFloat(prixInitial),
             idCategorie: selectedCategoryId,
+            typeDevis:selectedDevise
           }) as any
         )
-        
+
           .catch((error: Error) => console.log(error));
+          // console.log(s.payload.idProduit);
+          return s.payload.idProduit;
       } catch (error) {
         // console.log("test 2")
         console.log(error);
@@ -89,19 +110,87 @@ import {
   
     async function testproduit() {
       if (isErrorreference === true) {
-        alert("reference invalid");
+        toast({
+          title: "reference invalid",
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
       } else if (isErrornom === true) {
-        alert("nom invalid");
+        toast({
+          title: "nom invalid",
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
       } else if (isErrordescription === true) {
-        alert("description invalid");
+        toast({
+          title: "description invalid",
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
       }else if (isErrorprixInitial === true || !/^[0-9]+$/.test(prixInitial)) {
-        alert("prix invalid ou contient des lettres");
+        toast({
+          title: "prix invalid ou contient des lettres",
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
       }else if (isErrorcategorie === true) {
-        alert("categorie invalid");
-      }else {
-        await ProduitFetch(); 
-        alert("Produit ajouté avec succès!"); 
-        window.location.reload();
+        toast({
+          title: "categorie invalid",
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
+        
+      }else
+        if(isErrorDevise == true)
+        {
+          toast({
+            title: "devise invalid",
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top',
+          })
+        }else
+      {
+        const idProd=await ProduitFetch(); 
+        toast({
+          title: "Produit ajouté avec succès!",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        })
+        // window.location.reload();
+        const found=categories.find((cat)=>cat.idCategorie == selectedCategoryId);
+      
+      
+        const produitData={
+          idProduit:idProd,
+          reference:reference,
+          nom:nom,
+          description:description,
+          prixInitial:Number(prixInitial),
+          typeDevis:selectedDevise,
+          categorie:{
+            idCategorie:found.idCategorie,
+            nom:found.nom,
+            tva:Number(found.tva)
+          }
+        }
+       
+        
+      
+        clickEvent(produitData);
       }
     }
 
@@ -249,6 +338,39 @@ import {
                                 </FormErrorMessage>
                               )}
                             </FormControl>
+                            
+                            <FormControl isInvalid={isErrorDevise}>
+                            <FormLabel
+                                color={textColor}
+                                fontSize="xs"
+                                fontWeight="bold">
+                               Devise
+                              </FormLabel>
+                                <Select  
+                                isRequired={true}
+                                borderRadius="15px"
+                                fontSize="xs"
+                                name="selectedDevise"
+                                value={selectedDevise}
+                                onChange={(e) => setSelectedDevise(e.target.value)} 
+                                >
+                                  <option value=''>Selectionnez le devise de ce produit</option>
+                                  {
+                                    devises.map((elem)=>(
+                                      <option value={elem}>{elem}</option>
+                                    ))
+                                  }
+                                </Select>
+                                {!isErrorDevise ? (
+                                <FormErrorMessage>
+                                  Le devise est requis.
+                                </FormErrorMessage>
+                              ) : (
+                                <FormErrorMessage>
+                                  Le devise est requis.
+                                </FormErrorMessage>
+                              )}
+                           </FormControl>
 
                             <FormControl isInvalid={isErrorprixInitial}>
                               <FormLabel
@@ -296,7 +418,7 @@ import {
 >
 <option value="">Sélectionnez une catégorie</option>
   {categories.map((cat) => (
-    <option key={cat.id} value={cat.id}>
+    <option key={cat.idCategorie} value={cat.idCategorie}>
       {cat.nom}
     </option>
   ))}

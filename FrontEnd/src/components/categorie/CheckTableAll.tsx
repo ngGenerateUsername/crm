@@ -71,10 +71,11 @@ import {
     const [editItemId, setEditItemId] = useState(null);
     const [editItemNom, setEditItemNom] = useState(null);
     const [editItemTva, setEditItemTva] = useState(null);
-    const [editCategoryData, setEditCategoryData] = useState(null);
+  
+    // const [editCategoryData, setEditCategoryData] = useState(null);
     const btnRef = React.useRef();
     
-    let history = useHistory();
+    // let history = useHistory();
   
     const dispatch = useDispatch();
    
@@ -84,6 +85,9 @@ import {
    
     const { status, record } = useSelector((state: any) => state.AllCategorieExport);
     console.log(record, status);
+    const [recordState,setRecordState] = useState(record);
+    useEffect(()=>{setRecordState(record)},[record])
+    //redefinition mean that it return status and record but put them in new variables statusCommerciaux & recordCommerciaux
     const { status: statusCommerciaux, record: recordCommerciaux } = useSelector(
       (state: any) => state.CommerciauxPerEntrepriseExport
     );
@@ -97,7 +101,7 @@ import {
       const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette categorie ?");
     
       if (confirmation) {
-        console.log(id);
+        console.log(`id of categorie to delete : ${id}`);
         dispatch(DeleteCategorie(id) as any)
           .unwrap()
           .then((res: any) => {
@@ -106,19 +110,29 @@ import {
           });
       }
     };
-    const [idRelation, setidRelation] = useState("");
-    function OpenAffect(id : any, nom : any, tva : any) {
-      console.log("ID sélectionné :", id); 
-      const categoryToEdit = record.find((e: any) => e.idCategorie === id);
-      if (categoryToEdit) {
-        setEditCategoryData(categoryToEdit);
-        setEditItemId(id); 
-        setEditItemNom(nom);
-        setEditItemTva(tva);
-        onOpen();
-      } else {
-        console.log("Categorie introuvable");
+
+     function whenClick(dataCategorie:any):void{
+      if(editItemId)
+      {
+        console.log(`HEllo bagarou Da5el: ${JSON.stringify(dataCategorie)}`)
+        console.log("if edit is pressed !")
+        const recordUpdate = record.map((elemRecord:any)=>{
+          if(elemRecord.idCategorie == dataCategorie.idCategorie)
+          return dataCategorie;
+          else
+          return elemRecord;
+        })
+        console.log(`HEllo bagarou: ${JSON.stringify(recordUpdate)}`)
+        setRecordState(recordUpdate);
+
+      }else
+      {
+        console.log("if add is pressed !");
+        setRecordState([...recordState,dataCategorie]);
+        onClose();
       }
+
+      onClose();
     }
    
   
@@ -157,7 +171,7 @@ import {
         );
   
       if (status === "succeeded") {
-        return record.map((e: any) => {
+        return recordState.map((e: any) => {
           return (
             <Tr>
               <Td>
@@ -220,9 +234,6 @@ import {
       setEditItemId(e.idCategorie);
       setEditItemNom(e.nom); 
       setEditItemTva(e.tva); 
-      console.log("id", e.idCategorie);
-      console.log("nom", e.nom);
-      console.log("tva", e.tva);
       onOpen();
     }}
     marginLeft="40%"
@@ -331,10 +342,10 @@ import {
             <DrawerHeader>{editItemId ? "Modifier  Catégorie" : "Ajouter Catégorie"}</DrawerHeader>
             <DrawerBody>
         {editItemId ? (
-          <Overview1 categoryData={{ id: editItemId, nom: editItemNom, tva: editItemTva }} />
+          <Overview1 categoryData={{ id: editItemId, nom: editItemNom, tva: editItemTva }} eventClick={whenClick} />
          
         ) : (
-          <Overview /> 
+          <Overview eventClick={whenClick} /> 
         )}
       </DrawerBody>
             <DrawerFooter>

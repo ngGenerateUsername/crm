@@ -18,13 +18,13 @@ const initialState: State = {
     error: null
 };
 
-export const AllDevisByCom = createAsyncThunk(
-    "Devis/AllDevisByCom",
-    async ( data:any , thunkAPI) => {
+export const AllDevis = createAsyncThunk(
+    "Devis/AllDevis",
+    async ( data , thunkAPI) => {
         const { rejectWithValue } = thunkAPI;
         try {
 
-            const response = await axios.get(`http://localhost:9001/BackendCRM/devis/commerciale/${data}`);
+            const response = await axios.get("http://localhost:9998/BackendCRM/devis");
             console.log(response.data)
             return response.data;
         } catch (error: any) {
@@ -33,27 +33,13 @@ export const AllDevisByCom = createAsyncThunk(
     }
 )
 
-export const AddDevis = createAsyncThunk(
-    "devis/AddDevis",
-    async ( data:any , thunkAPI) => {
-        const { rejectWithValue } = thunkAPI;
-        try {
-
-            const response = await axios.post("http://localhost:9001/BackendCRM/devis",data);
-
-            return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.message)
-        }
-    }
-)
 export const DeleteDevis = createAsyncThunk(
     "Devis/DeleteDevis",
     async ( data : any , thunkAPI) => {
         const { rejectWithValue } = thunkAPI;
         try {
 
-            const response = await axios.delete("http://localhost:9001/BackendCRM/devis/delete/"+data);
+            const response = await axios.delete("http://localhost:9998/BackendCRM/devis/"+data);
             console.log(response.data)
             return response.data;
         } catch (error: any) {
@@ -67,7 +53,7 @@ export const DetailDevis = createAsyncThunk(
     async (data:any , thunkAPI) => {
         const { rejectWithValue } = thunkAPI;
         try {
-            const response = await axios.get("http://localhost:9001/BackendCRM/devis/"+data);
+            const response = await axios.get("http://localhost:9998/BackendCRM/devis/"+data);
             //console.log(response.data,'response.data')
             console.log(response.data)
             return response.data;
@@ -98,22 +84,22 @@ export const ModifierDevis = createAsyncThunk(
 
 
 /************************ AllDevis ***********************/
-export const AllDevisByComsExport = createSlice({
-    name: "AllDevisByCom",
+export const AllDevisExport = createSlice({
+    name: "AllDevis",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(AllDevisByCom.pending, (state) => {
+            .addCase(AllDevis.pending, (state) => {
                 state.status = 'loading';
                 state.error = null
 
             })
-            .addCase(AllDevisByCom.fulfilled, (state, action) => {
+            .addCase(AllDevis.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.record = action.payload;
             })
-            .addCase(AllDevisByCom.rejected, (state, action) => {
+            .addCase(AllDevis.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })
@@ -181,29 +167,6 @@ export const ModifierDevisExport = createSlice({
                 state.record = action.payload;
             })
             .addCase(ModifierDevis.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.error.message;
-            })
-    }
-})
-
-
-export const AddDevisExport = createSlice({
-    name: "AddDevis",
-    initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(AddDevis.pending, (state) => {
-                state.status = 'loading';
-                state.error = null
-
-            })
-            .addCase(AddDevis.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.record = action.payload;
-            })
-            .addCase(AddDevis.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             })

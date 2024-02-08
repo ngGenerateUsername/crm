@@ -13,7 +13,6 @@ import Contrat from'pages/opportunity/SingleContrat';
 import Kanban from'pages/Test';
 
 
-
 const routesMe = [
 	{
 		name: 'Mon entreprise',layout: '/commercial',path: '/company',
@@ -71,10 +70,6 @@ const routesMe = [
 		icon: <Icon as={MdPerson} width='20px' height='20px' color='inherit' />,
 		component: Contrat
 	},
-
-
-	
-
 ];
 
 export default routesMe;
