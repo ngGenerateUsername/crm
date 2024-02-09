@@ -1,0 +1,128 @@
+!SESSION 2024-02-09 01:03:28.245 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=17.0.7
+java.vendor=Red Hat, Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.808
+!MESSAGE class org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin is started
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.912
+!MESSAGE Main thread is waiting
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.939
+!MESSAGE >> initialize
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.939
+!MESSAGE Initializing Java Language Server 1.10.0.202203040350
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.945
+!MESSAGE Static Commands: []
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.945
+!MESSAGE Non-Static Commands: [java.edit.organizeImports, java.project.refreshDiagnostics, java.project.import, java.navigate.openTypeHierarchy, java.project.removeFromSourcePath, java.project.listSourcePaths, java.project.resolveStackTraceLocation, java.project.getAll, java.project.isTestFile, java.project.getClasspaths, java.navigate.resolveTypeHierarchy, java.edit.stringFormatting, java.project.getSettings, java.project.updateSourceAttachment, java.project.upgradeGradle, java.project.resolveSourceAttachment, java.project.addToSourcePath]
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.948
+!MESSAGE Wait for AutoBuildOffJob start
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.948
+!MESSAGE Wait for AutoBuildOffJob end 0ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.948
+!MESSAGE Starting org.eclipse.m2e.core
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.949
+!MESSAGE Started org.eclipse.m2e.core 1ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.949
+!MESSAGE ProjectRegistryRefreshJob finished 0ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.949
+!MESSAGE Starting org.eclipse.buildship.core
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.956
+!MESSAGE Started org.eclipse.buildship.core 7ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.967
+!MESSAGE LoadingGradleVersionJob finished 10ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.977
+!MESSAGE >> initialized
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:28.977
+!MESSAGE Creating the Java project jdt.ls-java-project
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:29.021
+!MESSAGE Finished creating the Java project jdt.ls-java-project
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:29.297
+!MESSAGE Importing Maven project(s)
+
+!ENTRY org.eclipse.jdt.ls.core 4 0 2024-02-09 01:03:29.632
+!MESSAGE Initialization failed 
+!STACK 1
+org.eclipse.core.runtime.CoreException: Failed to import projects
+	at org.eclipse.jdt.ls.core.internal.managers.ProjectsManager.importProjects(ProjectsManager.java:136)
+	at org.eclipse.jdt.ls.core.internal.managers.ProjectsManager.initializeProjects(ProjectsManager.java:107)
+	at org.eclipse.jdt.ls.core.internal.handlers.InitHandler$1.runInWorkspace(InitHandler.java:244)
+	at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Contains: Invalid project description.
+Contains: OK
+Contains: /home/trycatch/workspace/ahmedCrm/CRM/BackEnd/Backend-CRM-MS-Offre overlaps the workspace location: /home/trycatch/workspace/ahmedCrm/CRM/BackEnd/Backend-CRM-MS-Offre/workspace
+!SUBENTRY 1 org.eclipse.jdt.ls.core 4 -1 2024-02-09 01:03:29.632
+!MESSAGE Failed to import projects
+!SUBENTRY 2 org.eclipse.core.resources 4 77 2024-02-09 01:03:29.633
+!MESSAGE Invalid project description.
+!SUBENTRY 3 unknown 0 0 2024-02-09 01:03:29.633
+!MESSAGE OK
+!SUBENTRY 3 org.eclipse.core.resources 4 77 2024-02-09 01:03:29.633
+!MESSAGE /home/trycatch/workspace/ahmedCrm/CRM/BackEnd/Backend-CRM-MS-Offre overlaps the workspace location: /home/trycatch/workspace/ahmedCrm/CRM/BackEnd/Backend-CRM-MS-Offre/workspace
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:29.669
+!MESSAGE >> initialization job finished
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:29.671
+!MESSAGE >> document/didOpen
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:29.691
+!MESSAGE >> build jobs finished
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:29.693
+!MESSAGE >> registerWatchers'
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:29.693
+!MESSAGE >> watchers registered
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:30.252
+!MESSAGE Reconciled 1. Took 0 ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:30.872
+!MESSAGE begin problem for /ICategorieServiceImp.java
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:30.872
+!MESSAGE 1 problems reported for /ICategorieServiceImp.java
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:30.875
+!MESSAGE Validated 1. Took 173 ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:39.799
+!MESSAGE >> document/didChange
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:39.807
+!MESSAGE Reconciled 1. Took 2 ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:40.296
+!MESSAGE begin problem for /ICategorieServiceImp.java
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:40.297
+!MESSAGE 1 problems reported for /ICategorieServiceImp.java
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:40.297
+!MESSAGE Validated 1. Took 39 ms
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:41.365
+!MESSAGE >> document/didSave
+
+!ENTRY org.eclipse.jdt.ls.core 1 0 2024-02-09 01:03:41.399
+!MESSAGE >> shutdown
